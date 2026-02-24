@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    profiles:
+      - postgres
+      - memory
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./internal/storage/postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - postgres_data:/var/internal/storage/postgres/data
+    profiles:
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    profiles:
+      - postgres
+
+volumes:
+  postgres_data:

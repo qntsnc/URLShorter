@@ -5,6 +5,6 @@
 package postgres
 
 type Url struct {
-	Url      string
 	Shorturl string
+	Url      string
 }

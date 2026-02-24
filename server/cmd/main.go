@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"linkShorter/internal/router"
 	"linkShorter/internal/storage"
 	"log"
@@ -22,6 +23,6 @@ func main() {
 	}
 
 	r := router.New(st)
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("ServerPort")), r))
 
 }

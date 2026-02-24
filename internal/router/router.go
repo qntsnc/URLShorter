@@ -15,7 +15,8 @@ func New(storage storage.Storage) *chi.Mux {
 	Urlhandler := &handlers.UrlHandler{Storage: storage}
 	r.Post("/url", Urlhandler.PostUrl)
 	r.Get("/url", Urlhandler.GetUrl)
-
+	redirectHandler := &handlers.RedirectHandler{Storage: storage}
+	r.Get("/{shortUrl}", redirectHandler.Redirect)
 	return r
 
 }

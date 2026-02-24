@@ -3,7 +3,7 @@ package memory
 import (
 	"context"
 	"fmt"
-	"linkShorter/internal/shorter"
+	"linkShorter/internal/service/shorter"
 )
 
 type MemoryStorage struct {
@@ -23,7 +23,7 @@ func (ms *MemoryStorage) SaveUrl(ctx context.Context, url string) (string, error
 	if _, ok := ms.urls[url]; ok {
 		return "", fmt.Errorf("url already exists")
 	}
-	short := shorter.GenerateShort()
+	short := shorter.GenerateShort(url)
 	ms.urls[short] = url
 	return short, nil
 }
@@ -31,7 +31,7 @@ func (ms *MemoryStorage) SaveUrl(ctx context.Context, url string) (string, error
 func (ms *MemoryStorage) GetUrl(ctx context.Context, short string) (string, error) {
 	url, ok := ms.urls[short]
 	if !ok {
-		return "", fmt.Errorf("url not found")
+		return "", fmt.Errorf("url is not exist")
 	}
 	return url, nil
 }
