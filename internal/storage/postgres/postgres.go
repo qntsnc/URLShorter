@@ -26,7 +26,7 @@ func (ps *PostgresStorage) SaveUrl(ctx context.Context, url string) (string, err
 		return "", err
 	}
 	if !set {
-		log.Print("Url is already exist\n")
+		log.Print("Url is already exist\n, found in redis")
 		return shrt, nil
 	}
 	sh, err := ps.Queries.SaveURL(ctx, pgdb.SaveURLParams{
@@ -48,10 +48,12 @@ func (ps *PostgresStorage) SaveUrl(ctx context.Context, url string) (string, err
 func (ps *PostgresStorage) GetUrl(ctx context.Context, short string) (string, error) {
 	FullURL, err := ps.redis.Client.Get(ctx, short).Result()
 	if err == nil {
+		log.Println("url found in redis")
 		return FullURL, nil
 	}
 	FullURL, err = ps.Queries.GetURL(ctx, short)
 	if err != nil {
+		log.Println("url found in db")
 		return "", err
 	}
 	return FullURL, nil
