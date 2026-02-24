@@ -1,13 +1,24 @@
 services:
-  app:
+  app-memory:
     build: .
     ports:
       - "8080:8080"
     env_file:
       - .env
+    environment:
+      - StorageType=memory
+    profiles:
+      - memory
+  app-postgres:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - StorageType=postgres
     profiles:
       - postgres
-      - memory
 
   db:
     image: postgres:15-alpine
