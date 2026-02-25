@@ -24,6 +24,6 @@ func NewStorage(t string) (Storage, error) {
 		}
 		return postgresStorage, nil
 	default:
-		return nil, fmt.Errorf("unknown storage type: %s", t)
+		return nil, fmt.Errorf("Unknown storage type: %s", t)
 	}
 }

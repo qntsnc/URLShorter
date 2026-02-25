@@ -9,6 +9,7 @@ services:
       - StorageType=memory
     profiles:
       - memory
+
   app-postgres:
     build: .
     ports:

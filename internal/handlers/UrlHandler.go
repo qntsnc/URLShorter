@@ -47,8 +47,8 @@ func (h *UrlHandler) GetUrl(w http.ResponseWriter, r *http.Request) {
 	}
 	url, err := h.Storage.GetUrl(r.Context(), d.ShortUrl)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("Server error: %v", err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		log.Printf("Not found url: %v", err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

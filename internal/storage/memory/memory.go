@@ -20,12 +20,12 @@ func NewMemoryStorage() *MemoryStorage {
 
 func (ms *MemoryStorage) SaveUrl(ctx context.Context, url string) (string, error) {
 	if url == "" {
-		return "", fmt.Errorf("url cannot be empty")
+		return "", fmt.Errorf("URL cannot be empty")
 	}
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
 	if _, ok := ms.urls[url]; ok {
-		return "", fmt.Errorf("url already exists")
+		return "", fmt.Errorf("URL already exists")
 	}
 	short := shorter.GenerateShort(url)
 	ms.urls[short] = url
@@ -37,7 +37,7 @@ func (ms *MemoryStorage) GetUrl(ctx context.Context, short string) (string, erro
 	defer ms.mu.RUnlock()
 	url, ok := ms.urls[short]
 	if !ok {
-		return "", fmt.Errorf("url is not exist")
+		return "", fmt.Errorf("URL is not exist")
 	}
 	return url, nil
 }

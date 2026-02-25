@@ -22,7 +22,7 @@ func newMockStorage() *mockStorage {
 
 func (m *mockStorage) SaveUrl(_ context.Context, url string) (string, error) {
 	if url == "" {
-		return "", fmt.Errorf("url cannot be empty")
+		return "", fmt.Errorf("Url cannot be empty")
 	}
 	short := "qwe123"
 	m.urls[short] = url
@@ -32,36 +32,36 @@ func (m *mockStorage) SaveUrl(_ context.Context, url string) (string, error) {
 func (m *mockStorage) GetUrl(_ context.Context, short string) (string, error) {
 	url, ok := m.urls[short]
 	if !ok {
-		return "", fmt.Errorf("not found")
+		return "", fmt.Errorf("Not found")
 	}
 	return url, nil
 }
 
 func TestUrlHandler_PostUrl(t *testing.T) {
 	tests := []struct {
-		name       string
-		body       string
-		wantStatus int
+		name         string
+		body         string
+		expectStatus int
 	}{
 		{
-			name:       "valid url",
-			body:       `{"url":"https://example.com"}`,
-			wantStatus: http.StatusCreated,
+			name:         "valid url",
+			body:         `{"url":"https://example.com"}`,
+			expectStatus: http.StatusCreated,
 		},
 		{
-			name:       "invalid json",
-			body:       `{invalid}`,
-			wantStatus: http.StatusBadRequest,
+			name:         "invalid json",
+			body:         `{invalid}`,
+			expectStatus: http.StatusBadRequest,
 		},
 		{
-			name:       "invalid url",
-			body:       `{"url":"not-a-url"}`,
-			wantStatus: http.StatusBadRequest,
+			name:         "invalid url",
+			body:         `{"url":"noturl"}`,
+			expectStatus: http.StatusBadRequest,
 		},
 		{
-			name:       "empty url",
-			body:       `{"url":""}`,
-			wantStatus: http.StatusBadRequest,
+			name:         "empty url",
+			body:         `{"url":""}`,
+			expectStatus: http.StatusBadRequest,
 		},
 	}
 
@@ -71,8 +71,8 @@ func TestUrlHandler_PostUrl(t *testing.T) {
 			req := httptest.NewRequest(http.MethodPost, "/url", bytes.NewBufferString(tt.body))
 			rec := httptest.NewRecorder()
 			handler.PostUrl(rec, req)
-			if rec.Code != tt.wantStatus {
-				t.Errorf("PostUrl() status = %d, want %d", rec.Code, tt.wantStatus)
+			if rec.Code != tt.expectStatus {
+				t.Errorf("PostUrl() status = %d, want %d", rec.Code, tt.expectStatus)
 			}
 		})
 	}
@@ -95,30 +95,30 @@ func TestUrlHandler_PostUrl_ResponseBody(t *testing.T) {
 
 func TestUrlHandler_GetUrl(t *testing.T) {
 	tests := []struct {
-		name       string
-		setup      func(*mockStorage)
-		body       string
-		wantStatus int
+		name         string
+		setup        func(*mockStorage)
+		body         string
+		expectStatus int
 	}{
 		{
 			name: "existing url",
 			setup: func(m *mockStorage) {
 				m.urls["qwe123"] = "https://example.com"
 			},
-			body:       `{"shortUrl":"qwe123"}`,
-			wantStatus: http.StatusOK,
+			body:         `{"shortUrl":"qwe123"}`,
+			expectStatus: http.StatusOK,
 		},
 		{
-			name:       "not found",
-			setup:      func(m *mockStorage) {},
-			body:       `{"shortUrl":"missing"}`,
-			wantStatus: http.StatusInternalServerError,
+			name:         "not found",
+			setup:        func(m *mockStorage) {},
+			body:         `{"shortUrl":"missing"}`,
+			expectStatus: http.StatusNotFound,
 		},
 		{
-			name:       "invalid json",
-			setup:      func(m *mockStorage) {},
-			body:       `{bad}`,
-			wantStatus: http.StatusBadRequest,
+			name:         "invalid json",
+			setup:        func(m *mockStorage) {},
+			body:         `{bad}`,
+			expectStatus: http.StatusBadRequest,
 		},
 	}
 
@@ -132,8 +132,8 @@ func TestUrlHandler_GetUrl(t *testing.T) {
 
 			handler.GetUrl(rec, req)
 
-			if rec.Code != tt.wantStatus {
-				t.Errorf("GetUrl() status = %d, want %d", rec.Code, tt.wantStatus)
+			if rec.Code != tt.expectStatus {
+				t.Errorf("GetUrl() status = %d, want %d", rec.Code, tt.expectStatus)
 			}
 		})
 	}
@@ -143,12 +143,9 @@ func TestUrlHandler_GetUrl_ResponseBody(t *testing.T) {
 	ms := newMockStorage()
 	ms.urls["qwe123"] = "https://example.com"
 	handler := &UrlHandler{Storage: ms}
-
 	req := httptest.NewRequest(http.MethodGet, "/url", bytes.NewBufferString(`{"shortUrl":"qwe123"}`))
 	rec := httptest.NewRecorder()
-
 	handler.GetUrl(rec, req)
-
 	var resp map[string]string
 	if err := json.NewDecoder(rec.Body).Decode(&resp); err != nil {
 		t.Fatalf("failed to decode response: %v", err)
@@ -160,10 +157,10 @@ func TestUrlHandler_GetUrl_ResponseBody(t *testing.T) {
 
 func TestRedirectHandler_Redirect(t *testing.T) {
 	tests := []struct {
-		name       string
-		shortUrl   string
-		setup      func(*mockStorage)
-		wantStatus int
+		name         string
+		shortUrl     string
+		setup        func(*mockStorage)
+		expectStatus int
 	}{
 		{
 			name:     "existing short url",
@@ -171,19 +168,19 @@ func TestRedirectHandler_Redirect(t *testing.T) {
 			setup: func(m *mockStorage) {
 				m.urls["qwe123"] = "https://example.com"
 			},
-			wantStatus: http.StatusFound,
+			expectStatus: http.StatusFound,
 		},
 		{
-			name:       "nonexistent short url",
-			shortUrl:   "missing",
-			setup:      func(m *mockStorage) {},
-			wantStatus: http.StatusNotFound,
+			name:         "nonexistent short url",
+			shortUrl:     "missing",
+			setup:        func(m *mockStorage) {},
+			expectStatus: http.StatusNotFound,
 		},
 		{
-			name:       "empty short url",
-			shortUrl:   "",
-			setup:      func(m *mockStorage) {},
-			wantStatus: http.StatusBadRequest,
+			name:         "empty short url",
+			shortUrl:     "",
+			setup:        func(m *mockStorage) {},
+			expectStatus: http.StatusBadRequest,
 		},
 	}
 
@@ -198,11 +195,9 @@ func TestRedirectHandler_Redirect(t *testing.T) {
 			rctx.URLParams.Add("shortUrl", tt.shortUrl)
 			req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
 			rec := httptest.NewRecorder()
-
 			handler.Redirect(rec, req)
-
-			if rec.Code != tt.wantStatus {
-				t.Errorf("Redirect() status = %d, want %d", rec.Code, tt.wantStatus)
+			if rec.Code != tt.expectStatus {
+				t.Errorf("Redirect() status = %d, want %d", rec.Code, tt.expectStatus)
 			}
 		})
 	}

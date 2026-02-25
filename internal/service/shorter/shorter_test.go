@@ -54,7 +54,7 @@ func TestGenerateShort_Unique(t *testing.T) {
 	for _, url := range urls {
 		short := GenerateShort(url)
 		if prev, exists := results[short]; exists {
-			t.Errorf("collision: %q and %q both produce %q", prev, url, short)
+			t.Errorf("Collision: %q and %q both produce %q", prev, url, short)
 		}
 		results[short] = url
 	}
@@ -69,7 +69,7 @@ func TestGenerateShort_ValidCharacters(t *testing.T) {
 	}
 	for i := 0; i < len(short); i++ {
 		if !allowedSet[short[i]] {
-			t.Errorf("invalid character %q at position %d", short[i], i)
+			t.Errorf("Invalid character %q at position %d", short[i], i)
 		}
 	}
 }
